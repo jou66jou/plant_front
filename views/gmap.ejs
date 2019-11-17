@@ -62,7 +62,8 @@
             display: inline-block;
         }
 
-        #infoMsg,#infoFutureMsg {
+        #infoMsg,
+        #infoFutureMsg {
             background-color: white;
             width: 325px;
             height: 125px;
@@ -71,10 +72,6 @@
             left: 10%;
             padding: 10px;
             visibility: hidden;
-        }
-
-        #infoFutureMsg {
-           
         }
     </style>
 </head>
@@ -106,7 +103,6 @@
             <ul>
 
             </ul>
-            <i class="fas fa-chevron-right"></i>
         </div>
     </div>
     <% include ./footer_disease %>
@@ -218,6 +214,7 @@
                         infowindow.setContent(contentString);
                         infowindow.open(map, marker);
                         $("#infoMsg").css("visibility", "visible");
+                        $("#infoFutureMsg").css("visibility", "hidden");
                     }
                 })(marker, i));
                 markers.push(marker);
@@ -238,12 +235,20 @@
                 });
 
                 google.maps.event.addListener(marker, 'click', (function (marker, i) {
-                    
-                    $('#infoFutureModal').modal('toggle');
-                    
+                    return function () {
+                        console.log(locations[i]);
+                        var liString = "";
+                        liString += "<li>備註:" + locations[i][3] + "</li>";
+                        liString += "<li>疾病:" + locations[i][4] + "</li>";
+                        liString += "<li>RH:" + locations[i][5] + "</li>";
+                        $('#infoFutureMsg ul').html(liString);
+                        $("#infoFutureMsg").css("visibility", "visible");
+                        $("#infoMsg").css("visibility", "hidden");
+                    }
                 })(marker, i));
                 markers.push(marker);
             }
+
         }
 
         function DeleteMarkers() {
@@ -257,6 +262,8 @@
             //type:0 過去,:1 未來
             if (markers.length > 0) DeleteMarkers();
             if (type == 0) {
+                $("#infoMsg").css("visibility", "visible");
+                $("#infoFutureMsg").css("visibility", "hidden");
                 $("#futurePredict").removeClass('switchWhite');
                 $("#pastData").addClass('switchWhite');
                 $.get("https://coop2019.herokuapp.com/getHistory", function (data) {
@@ -283,6 +290,8 @@
                     setMark();
                 });
             } else {
+
+                $("#infoMsg").css("visibility", "hidden");
                 $("#pastData").removeClass('switchWhite');
                 $("#futurePredict").addClass('switchWhite');
                 $.get("https://coop2019.herokuapp.com/getWarning", function (data) {
